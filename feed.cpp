@@ -56,8 +56,13 @@ void Feed::parseAtom(QDomDocument *doc)
         _title = titleNode.firstChild().nodeValue();
         qDebug() << "Title:" << _title;
     }
-    QDomNodeList entries = root.elementsByTagName("entry");
+    QDomNodeList entries = doc->elementsByTagName("entry");
     qDebug() << entries.size();
+    for ( unsigned int i = 0; i < entries.length(); i++ )
+    {
+        QDomNode entry = entries.item(i);
+        qDebug() << "Entry" << i << "has" << entry.childNodes().length() << "children.";
+    }
 }
 
 QString Feed::getTitle()
