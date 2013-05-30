@@ -21,6 +21,7 @@ class Feed : public
 public:
     Feed(QString url);
     QString getTitle();
+    QString getUrl();
     FeedType getType();
     QString getTypeString();
 
@@ -34,6 +35,7 @@ private:
     void parseAtom(QDomDocument *doc);
     QNetworkAccessManager *_nam;
     QString _title;
+    QString _url;
     FeedType _type;
 };
 

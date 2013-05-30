@@ -1,15 +1,17 @@
 #include "feed.h"
 
 #include <QtCore/QDebug>
+#include <QtCore/QList>
 
 #include <QtNetwork/QNetworkRequest>
 #include <QtNetwork/QNetworkReply>
 
 Feed::Feed(QString url) :
     QObject(NULL),
-    _nam(new QNetworkAccessManager)
+    _nam(new QNetworkAccessManager),
+    _url(url)
 {
-    _nam->get(QNetworkRequest(QUrl(url)));
+    _nam->get(QNetworkRequest(QUrl(_url)));
     connect(_nam, SIGNAL(finished(QNetworkReply*)), this, SLOT(parseFeed(QNetworkReply*)));
 }
 
@@ -37,6 +39,34 @@ void Feed::parseFeed(QNetworkReply *reply)
     {
         _type = FEED_RSS;
         qDebug() << "RSS not yet supported";
+    }
+    else if ( root.tagName() == "html" )
+    {
+        qDebug() << "HTML found!";
+        QDomNodeList linkNodes = doc.documentElement().elementsByTagName("link");
+        QList< QPair<QString, QUrl> > feeds;
+        for( unsigned int i = 0; i < linkNodes.length(); i++ )
+        {
+            qDebug() << "link tag found!";
+            QDomElement linkElement = linkNodes.item(i).toElement();
+            if ( linkElement.attribute("type") == "application/rss+xml" )
+            {
+                qDebug() << "feed link tag found!";
+                QUrl url(linkElement.attribute("href"));
+                if ( url.isRelative() )
+                    feeds.append(QPair<QString, QUrl>(linkElement.attribute("title"), QUrl(reply->url().scheme() + "://" + reply->url().host() + url.toString())));
+                else
+                    feeds.append(QPair<QString, QUrl>(linkElement.attribute("title"), url));
+            }
+        }
+        if ( feeds.length() > 0 )
+        {
+            qDebug() << "Feeds found:" << feeds;
+            _url = feeds.begin()->second.toString();
+            qDebug() << "Selected feed:" << _url;
+            _nam->get(QNetworkRequest(QUrl(_url)));
+            return;
+        }
     }
     else
     {
