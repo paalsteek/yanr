@@ -3,6 +3,8 @@
 
 #include <QWizard>
 
+#include "feed.h"
+
 namespace Ui {
 class FeedWizard;
 }
@@ -14,9 +16,13 @@ class FeedWizard : public QWizard
 public:
     explicit FeedWizard(QWidget *parent = 0);
     ~FeedWizard();
+
+signals:
+    void newFeed(Feed*);
     
 private:
     Ui::FeedWizard *_ui;
+    Feed* _feed;
 };
 
 #endif // FEEDWIZARD_H

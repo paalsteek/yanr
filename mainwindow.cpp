@@ -22,6 +22,12 @@ void MainWindow::addFeed()
 {
     FeedWizard *wizard = new FeedWizard();
 
-    connect(wizard, SIGNAL(accepted()), this, SLOT(repaint()));
+    connect(wizard, SIGNAL(accepted()), this, SLOT(newFeed()));
     wizard->show();
+}
+
+void MainWindow::newFeed()
+{
+    Feed* feed = ((FeedWizard*) sender())->getFeed();
+    _ui->textBrowser->setText(feed->getTitle());
 }

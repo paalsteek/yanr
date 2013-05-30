@@ -3,6 +3,8 @@
 
 #include <QMainWindow>
 
+#include "feed.h"
+
 namespace Ui {
 class MainWindow;
 }
@@ -17,6 +19,7 @@ public:
     
 protected slots:
     void addFeed();
+    void newFeed();
 
 private:
     Ui::MainWindow *_ui;
