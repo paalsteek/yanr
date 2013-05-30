@@ -34,11 +34,19 @@ void UrlPage::checkUrl(QString url)
     _complete = false;
     this->completeChanged();
     qDebug() << "Checking" << url;
-    QNetworkAccessManager *manager = new QNetworkAccessManager();
-    manager->head(QNetworkRequest(QUrl(url)));
-    connect(manager, SIGNAL(authenticationRequired(QNetworkReply*,QAuthenticator*)), this, SLOT(authRequired(QNetworkReply*,QAuthenticator*)));
-    connect(manager, SIGNAL(sslErrors(QNetworkReply*,QList<QSslError>)), this, SLOT(sslError(QNetworkReply*,QList<QSslError>)));
-    connect(manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(checkFinished(QNetworkReply*)));
+    QRegExp srx("^(http|https|ftp)://.*$");
+    if ( !srx.exactMatch(url))
+        url = "http://" + url;
+    QRegExp rx("^(http|https|ftp)://[a-zA-Z0-9-.]+.[a-zA-Z]{2,3}(:[a-zA-Z0-9]*)?/?([a-zA-Z0-9-._\?,\'/\\+&amp;%$#=~])*$");
+    if ( rx.exactMatch(url) )
+    {
+        // TODO: delay network check to reduce network traffic
+        QNetworkAccessManager *manager = new QNetworkAccessManager();
+        manager->head(QNetworkRequest(QUrl(url)));
+        connect(manager, SIGNAL(authenticationRequired(QNetworkReply*,QAuthenticator*)), this, SLOT(authRequired(QNetworkReply*,QAuthenticator*)));
+        connect(manager, SIGNAL(sslErrors(QNetworkReply*,QList<QSslError>)), this, SLOT(sslError(QNetworkReply*,QList<QSslError>)));
+        connect(manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(checkFinished(QNetworkReply*)));
+    }
 }
 
 void UrlPage::authRequired(QNetworkReply *reply, QAuthenticator *auth)

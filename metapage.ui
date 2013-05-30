@@ -35,7 +35,11 @@
     </widget>
    </item>
    <item row="1" column="1">
-    <widget class="QLineEdit" name="nameEdit"/>
+    <widget class="QLineEdit" name="nameEdit">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
+    </widget>
    </item>
    <item row="2" column="0">
     <widget class="QLabel" name="urlLabel">
@@ -48,7 +52,11 @@
     <widget class="QLineEdit" name="urlEdit"/>
    </item>
    <item row="3" column="1">
-    <widget class="QLineEdit" name="typeEdit"/>
+    <widget class="QLineEdit" name="typeEdit">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
+    </widget>
    </item>
    <item row="5" column="1">
     <spacer name="verticalSpacer_2">

@@ -4,6 +4,10 @@
 #include <QtNetwork/QNetworkAccessManager>
 #include <QtNetwork/QNetworkRequest>
 
+#include <QDebug>
+
+#include "feedwizard.h"
+
 MetaPage::MetaPage(QWidget *parent) :
     QWizardPage(parent),
     _ui(new Ui::MetaPage),
@@ -14,7 +18,14 @@ MetaPage::MetaPage(QWidget *parent) :
 
 void MetaPage::initializePage()
 {
-    _ui->urlEdit->setText(wizard()->field("url").toString());
+    QString url = wizard()->field("url").toString();
+    QRegExp srx("^(http|https|ftp)://.*$");
+    if ( !srx.exactMatch(url) )
+        url = "http://" + url;
+
+    _ui->urlEdit->setText(url);
+    _ui->nameEdit->setText("");
+    _ui->typeEdit->setText("");
 
     _feed = new Feed(_ui->urlEdit->text());
 
@@ -28,6 +39,14 @@ MetaPage::~MetaPage()
 
 void MetaPage::fillForm()
 {
-    _ui->nameEdit->setText(_feed->getTitle());
-    _ui->typeEdit->setText(_feed->getTypeString());
+    if ( sender() && ((Feed*) sender())->error() )
+    {
+        qDebug() << "Error in Feed:" << ((Feed*) sender())->errorString();
+    } else {
+        _ui->nameEdit->setText(_feed->getTitle());
+        _ui->nameEdit->setEnabled(true);
+        _ui->typeEdit->setText(_feed->getTypeString());
+        _ui->typeEdit->setEnabled(true);
+        ((FeedWizard*) this->wizard())->setFeed(_feed);
+    }
 }
