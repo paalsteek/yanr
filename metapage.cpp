@@ -25,9 +25,12 @@ void MetaPage::initializePage()
 
     _ui->urlEdit->setText(url);
     _ui->nameEdit->setText("");
+    _ui->nameEdit->setEnabled(false);
     _ui->typeEdit->setText("");
+    _ui->typeEdit->setEnabled(false);
 
     _feed = new Feed(_ui->urlEdit->text());
+    ((FeedWizard*) this->wizard())->setFeed(_feed);
 
     connect(_feed, SIGNAL(updated()), this, SLOT(fillForm()));
 }
