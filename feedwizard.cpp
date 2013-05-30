@@ -14,3 +14,13 @@ FeedWizard::~FeedWizard()
 {
     delete _ui;
 }
+
+Feed* FeedWizard::getFeed()
+{
+    return _feed;
+}
+
+void FeedWizard::setFeed(Feed *feed)
+{
+    _feed = feed;
+}

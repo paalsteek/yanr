@@ -9,7 +9,9 @@
 Feed::Feed(QString url) :
     QObject(NULL),
     _nam(new QNetworkAccessManager),
-    _url(url)
+    _url(url),
+    _error(false),
+    _errorString("")
 {
     _nam->get(QNetworkRequest(QUrl(_url)));
     connect(_nam, SIGNAL(finished(QNetworkReply*)), this, SLOT(parseFeed(QNetworkReply*)));
@@ -66,12 +68,16 @@ void Feed::parseFeed(QNetworkReply *reply)
             qDebug() << "Selected feed:" << _url;
             _nam->get(QNetworkRequest(QUrl(_url)));
             return;
+        } else {
+            _error = true;
+            _errorString = "Not a valid feed.";
         }
     }
     else
     {
         _type = FEED_UNKNOWN;
-        qDebug() << "Unknown feed format";
+        _error = true;
+        _errorString = "Unknown feed format.";
     }
     emit updated();
 }
@@ -116,4 +122,18 @@ QString Feed::getTypeString()
     case FEED_ATOM:
         return "Atom";
     }
+}
+
+bool Feed::error()
+{
+    return _error;
+}
+
+QString Feed::errorString()
+{
+    QString ret = "";
+    if (_error)
+        ret = _errorString;
+
+    return ret;
 }

@@ -17,6 +17,9 @@ public:
     explicit FeedWizard(QWidget *parent = 0);
     ~FeedWizard();
 
+    Feed* getFeed();
+    void setFeed(Feed* feed);
+
 signals:
     void newFeed(Feed*);
     

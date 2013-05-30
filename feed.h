@@ -25,6 +25,9 @@ public:
     FeedType getType();
     QString getTypeString();
 
+    bool error();
+    QString errorString();
+
 signals:
     void updated();
 
@@ -37,6 +40,8 @@ private:
     QString _title;
     QString _url;
     FeedType _type;
+    bool _error;
+    QString _errorString;
 };
 
 #endif // FEED_H
