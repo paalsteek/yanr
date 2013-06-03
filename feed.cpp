@@ -6,12 +6,12 @@
 #include <QtNetwork/QNetworkRequest>
 #include <QtNetwork/QNetworkReply>
 
-Feed::Feed(QString url, QString title, QString type) :
+Feed::Feed(QString url, QString title, FeedType type) :
     QObject(NULL),
     _nam(new QNetworkAccessManager),
     _title(title),
     _url(url),
-    _type(Feed::stringToType(type)),
+    _type(type),
     _error(false),
     _errorString("")
 {

@@ -19,7 +19,7 @@ class Feed : public
     Q_OBJECT
 
 public:
-    Feed(QString url, QString title = "", QString type = "unknown");
+    Feed(QString url, QString title = "", FeedType type = FEED_UNKNOWN);
     QString getTitle();
     QString getUrl();
     FeedType getType();

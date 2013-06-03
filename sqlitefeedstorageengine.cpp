@@ -28,7 +28,7 @@ SQLiteFeedStorageEngine::SQLiteFeedStorageEngine()
     QStringList tables = _db.tables();
     if ( ! tables.contains("meta") )
     {
-        QSqlQuery query("CREATE TABLE meta(id INTEGER PRIMARY KEY AUTOINCREMENT, name CHAR[30], url CHAR[100]);", _db);
+        QSqlQuery query("CREATE TABLE meta(id INTEGER PRIMARY KEY AUTOINCREMENT, name CHAR[30], url CHAR[100], type INTEGER);", _db);
         qDebug() << query.exec() << query.lastError();
     }
 }
@@ -41,7 +41,7 @@ SQLiteFeedStorageEngine::~SQLiteFeedStorageEngine()
 int SQLiteFeedStorageEngine::addFeed(Feed* feed)
 {
     QSqlQuery query(_db);
-    query.prepare("SELECT COUNT(name) FROM meta WHERE name LIKE :name;");
+    query.prepare("SELECT COUNT(*) FROM meta WHERE name LIKE :name;");
     query.bindValue(":name", feed->getTitle());
     if ( !query.exec() )
     {
@@ -54,9 +54,10 @@ int SQLiteFeedStorageEngine::addFeed(Feed* feed)
             return -1; //TODO: throw something
     }
 
-    query.prepare("INSERT INTO meta(name, url) VALUES (:name, :url);");
+    query.prepare("INSERT INTO meta(name, url, type) VALUES (:name, :url, :type);");
     query.bindValue(":name", feed->getTitle());
     query.bindValue(":url", feed->getUrl());
+    query.bindValue(":type", feed->getType());
     if ( !query.exec() )
     {
         qDebug() << query.lastError();
@@ -73,7 +74,7 @@ QList<Feed*> SQLiteFeedStorageEngine::getFeeds()
     query.exec("SELECT * FROM meta;");
     while ( query.next() )
     {
-        Feed* feed = new Feed(query.value("url").toString(), query.value("name").toString());
+        Feed* feed = new Feed(query.value("url").toString(), query.value("name").toString(), (FeedType) query.value("type").toInt());
         feedlist.append(feed);
     }
     return feedlist;
