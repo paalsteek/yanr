@@ -124,6 +124,11 @@ QString Feed::getTypeString()
     }
 }
 
+QString Feed::getUrl()
+{
+    return _url;
+}
+
 bool Feed::error()
 {
     return _error;

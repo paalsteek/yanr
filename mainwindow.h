@@ -4,6 +4,7 @@
 #include <QMainWindow>
 
 #include "feed.h"
+#include "sqlitefeedstorageengine.h"
 
 namespace Ui {
 class MainWindow;
@@ -23,6 +24,7 @@ protected slots:
 
 private:
     Ui::MainWindow *_ui;
+    FeedStorageEngine *_storage;
 };
 
 #endif // MAINWINDOW_H

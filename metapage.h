@@ -17,6 +17,7 @@ public:
     explicit MetaPage(QWidget *parent = 0);
     ~MetaPage();
     void initializePage();
+    virtual bool isComplete() const;
 
 private slots:
     void fillForm();
@@ -24,6 +25,7 @@ private slots:
 private:
     Ui::MetaPage *_ui;
     Feed *_feed;
+    bool _complete;
 };
 
 #endif // METAPAGE_H

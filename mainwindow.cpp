@@ -6,9 +6,10 @@
 #include "feedwizard.h"
 #include "feedstreemodel.h"
 
-MainWindow::MainWindow(QWidget *parent) :
-    QMainWindow(parent),
-    _ui(new Ui::MainWindow)
+MainWindow::MainWindow(QWidget *parent)
+    : QMainWindow(parent)
+    , _ui(new Ui::MainWindow)
+    , _storage(new SQLiteFeedStorageEngine())
 {
     _ui->setupUi(this);
 
@@ -43,4 +44,6 @@ void MainWindow::newFeed()
     qDebug() << index;
     FeedsTreeItem *item = static_cast<FeedsTreeItem*>(index.internalPointer());
     _ui->treeView->reset();
+
+    qDebug() << "Foobar:" << _storage->addFeed(feed);
 }

@@ -11,7 +11,8 @@
 MetaPage::MetaPage(QWidget *parent) :
     QWizardPage(parent),
     _ui(new Ui::MetaPage),
-    _feed(NULL)
+    _feed(NULL),
+    _complete(false)
 {
     _ui->setupUi(this);
 }
@@ -29,10 +30,17 @@ void MetaPage::initializePage()
     _ui->typeEdit->setText("");
     _ui->typeEdit->setEnabled(false);
 
+    _complete = false;
+
     _feed = new Feed(_ui->urlEdit->text());
     ((FeedWizard*) this->wizard())->setFeed(_feed);
 
     connect(_feed, SIGNAL(updated()), this, SLOT(fillForm()));
+}
+
+bool MetaPage::isComplete() const
+{
+    return _complete;
 }
 
 MetaPage::~MetaPage()
@@ -51,5 +59,7 @@ void MetaPage::fillForm()
         _ui->typeEdit->setText(_feed->getTypeString());
         _ui->typeEdit->setEnabled(true);
         ((FeedWizard*) this->wizard())->setFeed(_feed);
+        _complete = true;
+        emit completeChanged();
     }
 }

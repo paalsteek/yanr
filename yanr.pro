@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui network xml
+QT       += core gui network xml sql
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -19,7 +19,8 @@ SOURCES += main.cpp\
     metapage.cpp \
     feed.cpp \
     feedstreemodel.cpp \
-    feedstreeitem.cpp
+    feedstreeitem.cpp \
+    sqlitefeedstorageengine.cpp
 
 HEADERS  += mainwindow.h \
     feedwizard.h \
@@ -27,7 +28,9 @@ HEADERS  += mainwindow.h \
     metapage.h \
     feed.h \
     feedstreemodel.h \
-    feedstreeitem.h
+    feedstreeitem.h \
+    feedstorageengine.h \
+    sqlitefeedstorageengine.h
 
 FORMS    += mainwindow.ui \
     feedwizard.ui \
