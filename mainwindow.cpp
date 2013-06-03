@@ -15,6 +15,13 @@ MainWindow::MainWindow(QWidget *parent)
 
     FeedsTreeModel *model = new FeedsTreeModel(this);
 
+    QList<Feed*> feeds = _storage->getFeeds();
+
+    foreach(Feed* feed, feeds)
+    {
+        model->addFeed(feed);
+    }
+
     _ui->treeView->setModel(model);
 
     connect(_ui->actionQuit, SIGNAL(triggered()), this, SLOT(close()));
@@ -40,10 +47,11 @@ void MainWindow::newFeed()
 
     FeedsTreeModel *model = static_cast<FeedsTreeModel*>(_ui->treeView->model());
 
-    QModelIndex index = model->addFeed(feed);
-    qDebug() << index;
-    FeedsTreeItem *item = static_cast<FeedsTreeItem*>(index.internalPointer());
-    _ui->treeView->reset();
-
-    qDebug() << "Foobar:" << _storage->addFeed(feed);
+    int res = _storage->addFeed(feed);
+    qDebug() << "addFeed:" << res;
+    if ( res >= 0 )
+    {
+        /*QModelIndex index =*/ model->addFeed(feed);
+        _ui->treeView->reset();
+    }
 }

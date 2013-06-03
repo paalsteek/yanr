@@ -56,7 +56,7 @@ void MetaPage::fillForm()
     } else {
         _ui->nameEdit->setText(_feed->getTitle());
         _ui->nameEdit->setEnabled(true);
-        _ui->typeEdit->setText(_feed->getTypeString());
+        _ui->typeEdit->setText(Feed::typeToString(_feed->getType()));
         _ui->typeEdit->setEnabled(true);
         ((FeedWizard*) this->wizard())->setFeed(_feed);
         _complete = true;

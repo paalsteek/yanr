@@ -12,6 +12,7 @@ public:
     SQLiteFeedStorageEngine();
     ~SQLiteFeedStorageEngine();
     virtual int addFeed(Feed* feed);
+    virtual QList<Feed*> getFeeds();
 
 private:
     QSqlDatabase _db;

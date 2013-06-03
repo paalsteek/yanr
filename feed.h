@@ -19,11 +19,14 @@ class Feed : public
     Q_OBJECT
 
 public:
-    Feed(QString url);
+    Feed(QString url, QString title = "", QString type = "unknown");
     QString getTitle();
     QString getUrl();
     FeedType getType();
-    QString getTypeString();
+    QString getTypeString() __attribute__ ((deprecated));
+
+    static QString typeToString(FeedType type);
+    static FeedType stringToType(QString typeString);
 
     bool error();
     QString errorString();

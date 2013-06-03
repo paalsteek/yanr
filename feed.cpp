@@ -6,14 +6,18 @@
 #include <QtNetwork/QNetworkRequest>
 #include <QtNetwork/QNetworkReply>
 
-Feed::Feed(QString url) :
+Feed::Feed(QString url, QString title, QString type) :
     QObject(NULL),
     _nam(new QNetworkAccessManager),
+    _title(title),
     _url(url),
+    _type(Feed::stringToType(type)),
     _error(false),
     _errorString("")
 {
-    _nam->get(QNetworkRequest(QUrl(_url)));
+    if ( title.isEmpty() )
+        _nam->get(QNetworkRequest(QUrl(_url)));
+
     connect(_nam, SIGNAL(finished(QNetworkReply*)), this, SLOT(parseFeed(QNetworkReply*)));
 }
 
@@ -51,7 +55,7 @@ void Feed::parseFeed(QNetworkReply *reply)
         {
             qDebug() << "link tag found!";
             QDomElement linkElement = linkNodes.item(i).toElement();
-            if ( linkElement.attribute("type") == "application/rss+xml" )
+            if ( linkElement.attribute("type") == "application/rss+xml" || linkElement.attribute("type") == "application/atom+xml" )
             {
                 qDebug() << "feed link tag found!";
                 QUrl url(linkElement.attribute("href"));
@@ -113,15 +117,7 @@ FeedType Feed::getType()
 
 QString Feed::getTypeString()
 {
-    switch ( _type )
-    {
-    case FEED_UNKNOWN:
-        return "Unknown";
-    case FEED_RSS:
-        return "RSS";
-    case FEED_ATOM:
-        return "Atom";
-    }
+    return Feed::typeToString(_type);
 }
 
 QString Feed::getUrl()
@@ -141,4 +137,32 @@ QString Feed::errorString()
         ret = _errorString;
 
     return ret;
+}
+
+QString Feed::typeToString(FeedType type)
+{
+    QString result;
+    switch ( type )
+    {
+    case FEED_UNKNOWN:
+        result =  "Unknown";
+    case FEED_RSS:
+        result = "RSS";
+    case FEED_ATOM:
+        result = "Atom";
+    }
+    return result;
+}
+
+FeedType Feed::stringToType(QString typeString)
+{
+    FeedType type;
+    if ( typeString.compare("RSS") == 0 )
+        type = FEED_RSS;
+    else if ( typeString.compare("Atom") == 0 )
+        type = FEED_ATOM;
+    else
+        type = FEED_UNKNOWN;
+
+    return type;
 }

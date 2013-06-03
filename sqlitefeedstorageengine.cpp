@@ -65,3 +65,16 @@ int SQLiteFeedStorageEngine::addFeed(Feed* feed)
 
     return query.lastInsertId().toInt();
 }
+
+QList<Feed*> SQLiteFeedStorageEngine::getFeeds()
+{
+    QList<Feed*> feedlist;
+    QSqlQuery query;
+    query.exec("SELECT * FROM meta;");
+    while ( query.next() )
+    {
+        Feed* feed = new Feed(query.value("url").toString(), query.value("name").toString());
+        feedlist.append(feed);
+    }
+    return feedlist;
+}
