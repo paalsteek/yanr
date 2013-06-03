@@ -17,13 +17,17 @@ SOURCES += main.cpp\
     feedwizard.cpp \
     urlpage.cpp \
     metapage.cpp \
-    feed.cpp
+    feed.cpp \
+    feedstreemodel.cpp \
+    feedstreeitem.cpp
 
 HEADERS  += mainwindow.h \
     feedwizard.h \
     urlpage.h \
     metapage.h \
-    feed.h
+    feed.h \
+    feedstreemodel.h \
+    feedstreeitem.h
 
 FORMS    += mainwindow.ui \
     feedwizard.ui \
