@@ -20,7 +20,9 @@ SOURCES += main.cpp\
     feed.cpp \
     feedstreemodel.cpp \
     feedstreeitem.cpp \
-    sqlitefeedstorageengine.cpp
+    sqlitefeedstorageengine.cpp \
+    feedentry.cpp \
+    entrytablemodel.cpp
 
 HEADERS  += mainwindow.h \
     feedwizard.h \
@@ -30,7 +32,9 @@ HEADERS  += mainwindow.h \
     feedstreemodel.h \
     feedstreeitem.h \
     feedstorageengine.h \
-    sqlitefeedstorageengine.h
+    sqlitefeedstorageengine.h \
+    feedentry.h \
+    entrytablemodel.h
 
 FORMS    += mainwindow.ui \
     feedwizard.ui \

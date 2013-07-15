@@ -21,6 +21,19 @@ public:
 protected slots:
     void addFeed();
     void newFeed();
+    void openFeed(QModelIndex index);
+    void openEntry(QModelIndex index);
+    void updateFeeds();
+    void enableUpdateFeed();
+    void markSelectedEntriesRead();
+    void markSelectedEntriesUnread();
+    void toggleSelectedEntriesRead();
+    void markSelectedFeedsRead();
+    void markSelectedFeedsUnread();
+
+signals:
+    void markEntryRead(QModelIndex index);
+    void markEntryUnread(QModelIndex index);
 
 private:
     Ui::MainWindow *_ui;

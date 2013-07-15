@@ -1,5 +1,7 @@
 #include "feedstreemodel.h"
 
+#include <QDebug>
+
 FeedsTreeModel::FeedsTreeModel(QObject *parent)
     : QAbstractItemModel(parent)
 {
@@ -16,7 +18,7 @@ FeedsTreeModel::~FeedsTreeModel()
 QModelIndex FeedsTreeModel::addFeed(Feed *feed)
 {
     QList<QVariant> itemData;
-    itemData << feed->getTitle() << 0 << 0;
+    itemData << feed->getTitle() << feed->getUnreadCount() << feed->getTotalCount();
     FeedsTreeItem *feedItem = new FeedsTreeItem(itemData, _rootItem);
     feedItem->setFeed(feed);
     _rootItem->appendChild(feedItem);

@@ -8,11 +8,17 @@
 
 class SQLiteFeedStorageEngine : public FeedStorageEngine
 {
+    Q_OBJECT
+
 public:
     SQLiteFeedStorageEngine();
     ~SQLiteFeedStorageEngine();
     virtual int addFeed(Feed* feed);
     virtual QList<Feed*> getFeeds();
+    virtual QAbstractTableModel* getItems(int feedId);
+
+public slots:
+    virtual void addEntry(FeedEntry* entry, int feedId = -1);
 
 private:
     QSqlDatabase _db;

@@ -46,6 +46,7 @@ bool MetaPage::isComplete() const
 MetaPage::~MetaPage()
 {
     delete _ui;
+    _feed->abort();
 }
 
 void MetaPage::fillForm()

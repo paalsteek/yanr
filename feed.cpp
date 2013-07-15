@@ -6,17 +6,25 @@
 #include <QtNetwork/QNetworkRequest>
 #include <QtNetwork/QNetworkReply>
 
-Feed::Feed(QString url, QString title, FeedType type) :
-    QObject(NULL),
-    _nam(new QNetworkAccessManager),
-    _title(title),
-    _url(url),
-    _type(type),
-    _error(false),
-    _errorString("")
+#include "entrytablemodel.h"
+
+Feed::Feed(QString url, QString title, FeedType type, QList<FeedEntry *>* entries)
+    : QObject(NULL)
+    , _nam(new QNetworkAccessManager)
+    , _title(title)
+    , _url(url)
+    , _type(type)
+    , _error(false)
+    , _errorString("")
+    , _id(-1)
 {
     if ( title.isEmpty() )
-        _nam->get(QNetworkRequest(QUrl(_url)));
+    {
+        QNetworkReply* reply = _nam->get(QNetworkRequest(QUrl(_url)));
+        connect(this, SIGNAL(cancelRequests()), reply, SLOT(abort()));
+    }
+
+    _entries = new EntryTableModel(this, entries);
 
     connect(_nam, SIGNAL(finished(QNetworkReply*)), this, SLOT(parseFeed(QNetworkReply*)));
 }
@@ -51,7 +59,7 @@ void Feed::parseFeed(QNetworkReply *reply)
         qDebug() << "HTML found!";
         QDomNodeList linkNodes = doc.documentElement().elementsByTagName("link");
         QList< QPair<QString, QUrl> > feeds;
-        for( unsigned int i = 0; i < linkNodes.length(); i++ )
+        for( int i = 0; i < linkNodes.length(); i++ )
         {
             qDebug() << "link tag found!";
             QDomElement linkElement = linkNodes.item(i).toElement();
@@ -70,7 +78,8 @@ void Feed::parseFeed(QNetworkReply *reply)
             qDebug() << "Feeds found:" << feeds;
             _url = feeds.begin()->second.toString();
             qDebug() << "Selected feed:" << _url;
-            _nam->get(QNetworkRequest(QUrl(_url)));
+            QNetworkReply* reply = _nam->get(QNetworkRequest(QUrl(_url)));
+            connect(this, SIGNAL(cancelRequests()), reply, SLOT(abort()));
             return;
         } else {
             _error = true;
@@ -98,11 +107,35 @@ void Feed::parseAtom(QDomDocument *doc)
     }
     QDomNodeList entries = doc->elementsByTagName("entry");
     qDebug() << entries.size();
-    for ( unsigned int i = 0; i < entries.length(); i++ )
+    QList<FeedEntry*>* entryList = new QList<FeedEntry*>();
+    for ( int i = 0; i < entries.length(); i++ )
     {
         QDomNode entry = entries.item(i);
         qDebug() << "Entry" << i << "has" << entry.childNodes().length() << "children.";
+        FeedEntry* feedEntry = new FeedEntry(entry.firstChildElement("id").text());
+        feedEntry->setAuthor(entry.firstChildElement("author").text());
+        feedEntry->setDate(QDate::fromString(entry.firstChildElement("updated").text(), Qt::ISODate));
+        feedEntry->setTitle(entry.firstChildElement("title").text());
+        feedEntry->setSummary(entry.firstChildElement("summary").text());
+        feedEntry->setUrl(entry.firstChildElement("link").attribute("ref"));
+        qDebug() << "Author:" << feedEntry->getAuthor();
+        qDebug() << "Date:" << feedEntry->getDate();
+        qDebug() << "Summary:" << feedEntry->getSummary();
+        qDebug() << "Url:" << feedEntry->getUrl();
+        entryList->append(feedEntry);
+        emit entryAdded(feedEntry);
     }
+    _entries->addEntries(entryList);
+}
+
+void Feed::setId(int feedId)
+{
+    _id = feedId;
+}
+
+int Feed::getId()
+{
+    return _id;
 }
 
 QString Feed::getTitle()
@@ -115,14 +148,14 @@ FeedType Feed::getType()
     return _type;
 }
 
-QString Feed::getTypeString()
-{
-    return Feed::typeToString(_type);
-}
-
 QString Feed::getUrl()
 {
     return _url;
+}
+
+QAbstractTableModel* Feed::getEntries()
+{
+    return _entries;
 }
 
 bool Feed::error()
@@ -165,4 +198,26 @@ FeedType Feed::stringToType(QString typeString)
         type = FEED_UNKNOWN;
 
     return type;
+}
+
+void Feed::abort()
+{
+    emit cancelRequests();
+}
+
+int Feed::getTotalCount()
+{
+   return _entries->getEntries().size();
+}
+
+int Feed::getUnreadCount()
+{
+    int count = 0;
+    foreach(FeedEntry* e, _entries->getEntries())
+    {
+        if ( !e->isRead() )
+            count++;
+    }
+
+    return count;
 }
